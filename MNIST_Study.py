@@ -9,7 +9,7 @@ import os
 np.random.seed(42)
 
 # To plot pretty figures
-%matplotlib inline
+#%matplotlib inline
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 mpl.rc('axes', labelsize=14)
@@ -60,3 +60,20 @@ from sklearn.linear_model import SGDClassifier
 sgd_clf=SGDClassifier(max_iter=5,tol=-np.infty, random_state=42)
 sgd_clf.fit(X_train,y_train_5)
 sgd_clf.predict([some_digit])
+
+from sklearn.model_selection import StratifiedKFold
+from sklearn.base import clone
+
+skfolds = StratifiedKFold(n_splits=3, random_state=42)
+
+for train_index, test_index in skfolds.split(X_train, y_train_5):
+    clone_clf = clone(sgd_clf)
+    X_train_folds = X_train[train_index]
+    y_train_folds = (y_train_5[train_index])
+    X_test_fold = X_train[test_index]
+    y_test_fold = (y_train_5[test_index])
+
+    clone_clf.fit(X_train_folds, y_train_folds)
+    y_pred = clone_clf.predict(X_test_fold)
+    n_correct = sum(y_pred == y_test_fold)
+    print(n_correct / len(y_pred))
